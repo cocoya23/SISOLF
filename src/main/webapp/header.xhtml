@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"  
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+    <ui:composition>
+        <h:outputStylesheet library="css" name="general.css"/>
+        <link rel="shortcut icon" href="#{request.contextPath}/resources/icon/favicon.ico" type="image/x-icon"/>
+        <link rel="icon" href="#{request.contextPath}/resources/icon/favicon.ico" type="image/x-icon"/>
+        <p:dialog widgetVar="dlgLoading" closable="false" draggable="false" resizable="false" modal="true">
+            <p:graphicImage library="image" name="loading.GIF"/>
+        </p:dialog>
+        <p:dialog widgetVar="dlgWorking" closable="true" draggable="false" resizable="false" modal="true">
+            <p:graphicImage library="image" name="working.png"/>
+            <h2>En construcción...</h2>
+        </p:dialog>
+        <h:form id="formChangePassword">
+            <p:dialog widgetVar="dlgChangePassword" closable="true" draggable="false" resizable="false" modal="true">
+                <h:panelGrid columns="2" cellpadding="5">
+                    <h:outputLabel for="actual" value="Contraseña actual:"/>
+                    <p:password id="actual" required="true" label="Contraseña actual" value="#{sessionManaged.actualPassword}"/>
+                    <h:outputLabel for="nueva" value="Contraseña nueva:"/>
+                    <p:password id="nueva" required="true" label="Contraseña nueva" value="#{sessionManaged.nuevoPassword}" feedback="true"
+                                promptLabel="Esperando..." weakLabel="Debil" goodLabel="Buena" strongLabel="Fuerte"/>
+                    <f:facet name="footer" id="footerFormChangePassword">
+                        <p:commandButton value="Cambiar" style="float: right" onclick="PF('dlgLoading').show();" oncomplete="PF('dlgLoading').hide();handleChangeRequest(xhr, status, args);"
+                                         actionListener="#{sessionManaged.cambiaPassword}"/>
+                    </f:facet>
+                </h:panelGrid>
+            </p:dialog>
+            <script type="text/javascript">
+                function handleChangeRequest(xhr, status, args) {
+                    if (args.validationFailed || !args.ok) {
+                        PF('dlgChangePassword').jq.effect("shake", {times: 5}, 100);
+                    }
+                    else {
+                        PF('dlgChangePassword').hide();
+                    }
+                }
+            </script>
+        </h:form>
+        <p:idleMonitor timeout="1860000">
+            <p:ajax event="idle" oncomplete="location.reload();" />
+        </p:idleMonitor>
+        <p:ajaxExceptionHandler type="javax.faces.application.ViewExpiredException" onexception="location.reload();" />        
+    </ui:composition>
+</html>

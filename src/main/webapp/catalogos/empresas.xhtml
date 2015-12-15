@@ -1,0 +1,88 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"  
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+    <h:head>
+        <ui:include src="/header.xhtml"/>
+        <title>Empresas</title>
+    </h:head>
+    <h:body>
+        <h:form id="empresasForm">
+            <p:growl globalOnly="true" escape="false" autoUpdate="true" showDetail="true" life="5000"/>
+            <p:growl for="sticky" escape="false" autoUpdate="true" showDetail="true" sticky="true"/>
+            <h:panelGrid columns="2" id="gridGeneralEmpresas">
+                <p:dataTable style="width: 350px;" value="#{empresasManaged.empresas}" var="empresa" emptyMessage="Sin empresas"
+                             selectionMode="single" selection="#{empresasManaged.empresa}" rowKey="#{empresa.id}"
+                             scrollable="true" scrollHeight="280">
+                    <p:ajax event="rowSelect" listener="#{empresasManaged.onEmpresaSelect}" update=":empresasForm:gridGeneralEmpresas" />
+                    <p:column headerText="Nombre" style="width: 210px;">
+                        <h:outputText value="#{empresa.nombre}"/>
+                    </p:column>
+                    <p:column headerText="Giro">
+                        <h:outputText value="#{empresa.giro}"/>
+                    </p:column>
+                </p:dataTable>
+                <p:scrollPanel mode="native" style="width:442px;height:370px; border: none;" >
+                    <h:panelGrid columns="2" id="gridFormEmpresa">
+                        <h:panelGrid columns="1">
+                            <h:outputLabel for="nombreEmpresa" value="Nombre:"/>
+                            <p:inputText id="nombreEmpresa" value="#{empresasManaged.empresa.nombre}" required="true" label="Nombre" style="width: 100%;" tabindex="1"/>
+                            <p:separator/>
+
+                            <h:outputLabel for="respresentanteEmpresa" value="Representante Legal:" />
+                            <p:inputText id="respresentanteEmpresa" value="#{empresasManaged.empresa.representanteLegal}" required="true" label="Representante Legal" style="width: 100%;" tabindex="3"/>
+                            <p:separator/>
+
+                            <h:outputLabel for="actividadEmpresa" value="Actividad:"/>
+                            <p:inputTextarea id="actividadEmpresa" value="#{empresasManaged.empresa.actividad}" required="true" label="Actividad" cols="35" rows="3" tabindex="5"/>
+                            <p:separator/>
+                            <h:outputLabel for="direccionEmpresa" value="Direccion:"/>
+                            <p:inputTextarea id="direccionEmpresa" value="#{empresasManaged.empresa.direccion.direccion}" required="true" label="Direccion" cols="35" rows="2" tabindex="7"/>
+                            <p:separator/>
+                            <h:panelGrid columns="2">
+                                <h:outputLabel for="estadoEmpresa" value="Estado:"/>
+                                <h:outputLabel for="cpEmpresa" value="CP:"/>
+
+                                <p:selectOneMenu id="estadoEmpresa" value="#{empresasManaged.empresa.direccion.entidadFederativa}" converter="#{convertersManaged.entidadFederativaConverter}" tabindex="8">
+                                    <f:selectItems value="#{empresasManaged.entidadesFederativas}" var="entidadFederativa" itemLabel="#{entidadFederativa.entidadFederativa}" itemValue="#{entidadFederativa}"/>
+                                </p:selectOneMenu>
+                                <p:inputMask id="cpEmpresa" value="#{empresasManaged.empresa.direccion.cp}" mask="99999" required="true" label="CP" style="width: 40px;" tabindex="9"/>
+                            </h:panelGrid>
+                        </h:panelGrid>
+                        <h:panelGrid columns="1" style="margin-left: 5px;">
+                            <h:outputLabel for="rfcEmpresa" value="RFC:"/>
+                            <p:inputMask id="rfcEmpresa" value="#{empresasManaged.empresa.rfc}" mask="aaa 999999 ***" required="true" label="RFC" style="width: 100px;" tabindex="2"/>
+                            <p:separator/>
+                            <h:outputLabel for="giroEmpresa" value="Giro:"/>
+                            <p:inputText id="giroEmpresa" value="#{empresasManaged.empresa.giro}" required="true" label="Giro" tabindex="4"/>
+                            <p:separator/>
+                            <h:outputLabel value="Banco:" for="bancoEmpresa"/>
+                            <p:selectOneMenu value="#{empresasManaged.empresa.cuenta.banco}"  id="bancoEmpresa" converter="#{convertersManaged.bancoConverter}" tabindex="10">
+                                <f:selectItems value="#{empresasManaged.bancos}" var="banco" itemLabel="#{banco.nombre}" itemValue="#{banco}"/>
+                            </p:selectOneMenu>
+                            <p:separator/>
+                            <h:outputLabel for="cuentaEmpresa" value="Cuenta:"/>
+                            <p:inputMask id="cuentaEmpresa" value="#{empresasManaged.empresa.cuenta.cuenta}" mask="999 999 9999" required="true" label="Cuenta" tabindex="11"/>
+                            <p:separator/>
+                            <h:outputLabel for="clabeEmpresa" value="CLABE:"/>
+                            <p:inputMask id="clabeEmpresa" value="#{empresasManaged.empresa.cuenta.clabe}" mask="999 999 9999 9999 9999" required="true" label="CLABE" tabindex="12"/>
+                        </h:panelGrid>
+                    </h:panelGrid>
+                </p:scrollPanel>
+                <f:facet name="footer" id="footerFormEmpresa">
+                    <p:commandButton value="Guardar" style="float: right" onclick="PF('dlgLoading').show();" oncomplete="PF('dlgLoading').hide();"
+                                     actionListener="#{empresasManaged.guardar}" update=":empresasForm:gridGeneralEmpresas"/>
+                    <p:commandButton value="Nuevo" style="float: right" onclick="PF('dlgLoading').show();" oncomplete="PF('dlgLoading').hide();"
+                                     actionListener="#{empresasManaged.nuevo}" disabled="#{!empresasManaged.selected}" update=":empresasForm:gridGeneralEmpresas"/>
+                    <p:commandButton value="Eliminar" style="float: right" onclick="PF('dlgLoading').show();" oncomplete="PF('dlgLoading').hide();"
+                                     actionListener="#{empresasManaged.eliminar}" disabled="#{!empresasManaged.selected}" update=":empresasForm:gridGeneralEmpresas"/>
+                </f:facet>
+            </h:panelGrid>
+        </h:form>    
+    </h:body>
+</html>
+

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+  <session-factory>
+    <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+    <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+    <property name="hibernate.connection.url">jdbc:mysql://enrique-hdz.tk:3306/sisolf?zeroDateTimeBehavior=convertToNull</property>
+    <property name="hibernate.connection.username">sa</property>
+    <property name="hibernate.connection.password">Quique58</property>
+    <mapping class="org.eja.sisolf.entity.TipoArchivoFactura"/>
+    <mapping class="org.eja.sisolf.entity.Usuario"/>
+    <mapping class="org.eja.sisolf.entity.Direccion"/>
+    <mapping class="org.eja.sisolf.entity.ClienteAgente"/>
+    <mapping class="org.eja.sisolf.entity.EstadoSolicitudFactura"/>
+    <mapping class="org.eja.sisolf.entity.DireccionRetorno"/>
+    <mapping class="org.eja.sisolf.entity.Cliente"/>
+    <mapping class="org.eja.sisolf.entity.Banco"/>
+    <mapping class="org.eja.sisolf.entity.Cuenta"/>
+    <mapping class="org.eja.sisolf.entity.Configuracion"/>
+    <mapping class="org.eja.sisolf.entity.Agente"/>
+    <mapping class="org.eja.sisolf.entity.ClienteAgenteId"/>
+    <mapping class="org.eja.sisolf.entity.ArchivoFactura"/>
+    <mapping class="org.eja.sisolf.entity.Empresa"/>
+    <mapping class="org.eja.sisolf.entity.SolicitudFactura"/>
+    <mapping class="org.eja.sisolf.entity.CuentaRetorno"/>
+    <mapping class="org.eja.sisolf.entity.EntidadFederativa"/>
+    <mapping class="org.eja.sisolf.entity.ConceptoFactura"/>
+  </session-factory>
+</hibernate-configuration>

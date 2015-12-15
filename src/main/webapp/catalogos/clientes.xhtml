@@ -1,0 +1,88 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"  
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+    <h:head>
+        <ui:include src="/header.xhtml"/>
+        <title>Clientes</title>
+    </h:head>
+    <h:body>
+        <h:form id="clientesForm">
+            <p:growl globalOnly="true" escape="false" autoUpdate="true" showDetail="true" life="5000"/>
+            <p:growl for="sticky" escape="false" autoUpdate="true" showDetail="true" sticky="true"/>
+            <h:panelGrid columns="2" id="gridGeneralClientes">
+                <p:dataTable style="width: 250px;" value="#{clientesManaged.clientes}" var="cliente" emptyMessage="Sin clientes"
+                             selectionMode="single" selection="#{clientesManaged.cliente}" rowKey="#{cliente.id}"
+                             scrollable="true" scrollHeight="280">
+                    <p:ajax event="rowSelect" listener="#{clientesManaged.onClienteSelect}" update=":clientesForm:gridGeneralClientes" />
+                    <p:column headerText="Nombre">
+                        <h:outputText value="#{cliente.nombre}"/>
+                    </p:column>
+                </p:dataTable>
+                <h:panelGrid columns="1" id="gridFormCliente">
+                    <h:outputLabel for="nombreCliente" value="Nombre:"/>
+                    <p:inputText id="nombreCliente" style="width: 100%;" value="#{clientesManaged.cliente.nombre}" required="true" label="Nombre"/>
+                    <p:separator/>
+                    <h:panelGrid columns="2">
+                        <h:outputLabel for="emailCliente" value="Email:"/>
+                        <h:outputLabel for="activoCliente" value="Activo:"/>
+                        <p:inputText id="emailCliente" value="#{clientesManaged.cliente.email}" required="true" label="Email"/>
+                        <p:inputSwitch id="activoCliente" value="#{clientesManaged.cliente.activo}" required="true" label="Activo" onLabel="Si" offLabel="No"/>
+                    </h:panelGrid>
+                    <p:separator/>
+                    <h:panelGrid columns="2">
+                        <h:outputLabel for="telefonoCliente" value="Telefono:"/>
+                        <h:outputLabel for="porcentajeCliente" value="Porcentaje:"/>
+                        <p:inputText id="telefonoCliente" value="#{clientesManaged.cliente.telefono}" required="true" label="Telefono"/>
+                        <p:inputText id="porcentajeCliente" style="width: 50px;" value="#{clientesManaged.cliente.porcentaje}" required="true" label="Porcentaje">
+                            <p:ajax event="blur" update="totalPuntos" listener="#{clientesManaged.contarPuntos}"/>
+                        </p:inputText>
+                    </h:panelGrid>
+                    <p:separator/>
+                    <h:outputLabel value="Agentes:"/>
+                    <p:dataTable style="width: 300px;" value="#{clientesManaged.agentesCliente}" var="agente" emptyMessage="Sin agentes"
+                                 selectionMode="single" selection="#{clientesManaged.agenteCliente}" rowKey="#{agente.id}"
+                                 scrollable="true" scrollHeight="100" editable="true" editMode="cell" >
+                        <p:ajax event="cellEdit" listener="#{clientesManaged.onCellEdit}" update=":clientesForm:totalPuntos"/>
+                        <f:facet name="header">
+                            <div style="text-align: right;">
+                                <p:selectOneMenu id="agenteCliente" value="#{clientesManaged.agenteNuevo}" converter="#{convertersManaged.agenteConverter}">
+                                    <f:selectItems value="#{clientesManaged.agentes}" var="agentel" itemLabel="#{agentel.nombre}" itemValue="#{agentel}"/>
+                                </p:selectOneMenu>
+                                <p:commandButton icon="ui-icon-plusthick" actionListener="#{clientesManaged.agregarAgente}" update=":clientesForm:gridGeneralClientes"
+                                                 onclick="PF('dlgLoading').show();" oncomplete="PF('dlgLoading').hide();"/>
+                                <p:commandButton icon="ui-icon-minusthick" actionListener="#{clientesManaged.quitarAgente}" update=":clientesForm:gridGeneralClientes"
+                                                 onclick="PF('dlgLoading').show();" oncomplete="PF('dlgLoading').hide();"/>
+                            </div>
+                        </f:facet>
+                        <p:column headerText="Nombre">
+                            <h:outputText value="#{agente.nombre}" />                                    
+                        </p:column>
+                        <p:column headerText="Puntos" style="width: 50px;">
+                            <p:cellEditor>
+                                <f:facet name="output"><h:outputText value="#{agente.puntos}" /></f:facet>
+                                <f:facet name="input"><p:inputText value="#{agente.puntos}" style="width:96%" label="Puntos"/></f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                    </p:dataTable>                    
+                    <h:outputText id="totalPuntos" value="Puntos restantes: #{clientesManaged.totalPuntos}"/>
+                </h:panelGrid>
+                <f:facet name="footer" id="footerFormAgente">
+                    <p:commandButton value="Guardar" style="float: right" onclick="PF('dlgLoading').show();" oncomplete="PF('dlgLoading').hide();"
+                                     actionListener="#{clientesManaged.guardar}" update=":clientesForm:gridGeneralClientes"/>
+                    <p:commandButton value="Nuevo" style="float: right" onclick="PF('dlgLoading').show();" oncomplete="PF('dlgLoading').hide();"
+                                     actionListener="#{clientesManaged.nuevo}" disabled="#{!clientesManaged.update}" update=":clientesForm:gridGeneralClientes"/>
+                    <p:commandButton value="Eliminar" style="float: right" onclick="PF('dlgLoading').show();" oncomplete="PF('dlgLoading').hide();"
+                                     actionListener="#{clientesManaged.eliminar}" disabled="#{!clientesManaged.delete}" update=":clientesForm:gridGeneralClientes"/>
+                    <p:commandButton value="Generar clave" style="float: right" onclick="PF('dlgLoading').show();" oncomplete="PF('dlgLoading').hide();"
+                                     actionListener="#{clientesManaged.regenerarContrasena}" disabled="#{!clientesManaged.delete}" update=":clientesForm:gridGeneralClientes"/>
+                </f:facet>
+            </h:panelGrid>
+        </h:form>
+    </h:body>
+</html>
+
